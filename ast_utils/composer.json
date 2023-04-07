@@ -1,0 +1,16 @@
+{
+    "require": {
+        "symfony/polyfill-mbstring": "^1.26",
+        "psr/log": "^1.1",
+        "symfony/debug": "^4.4",
+        "symfony/console": "^5.4",
+        "symfony/error-handler": "^5.4",
+        "symfony/polyfill-ctype": "^1.26",
+        "symfony/yaml": "^5.4",
+        "phpdocumentor/graphviz": "1.0.4",
+        "nikic/php-parser": "^4.15",
+        "designsecurity/progpilot": "^0.8.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

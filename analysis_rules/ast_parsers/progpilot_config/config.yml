@@ -1,0 +1,24 @@
+inputs:
+    setDev: false
+    setLanguages:
+        - php
+    setFrameworks:
+        - suitecrm
+        - codeigniter
+        - wordpress
+        - prestashop
+        - symfony
+
+outputs:
+    taintedFlow: false
+
+options:
+    setAnalyzeIncludes: true
+    setAnalyzeFunctions: true
+    setAnalyzeHardRules: false
+    setPrintFile: false
+    setPrintWarning: true
+    setPrettyPrint: true
+    setLimitTime: 20
+    setLimitDefs: 30000
+    setLimitSize: 104857600
