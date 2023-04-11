@@ -132,8 +132,8 @@ dmypy.json
 .idea/
 
 # Custom rules
-# results/
+results/
 php-ast/
 ast_utils/vendor/
-# **/temp/*
+**/temp/*
 **/samples/*

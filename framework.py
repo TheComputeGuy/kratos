@@ -72,6 +72,7 @@ class Framework:
         ma = magic.Magic(mime=True)
 
         num_files = 0
+        # TODO: Check everything after base_path, or just everything?
         for directory_path, subdirectories, filenames in os.walk(self.plugin.plugin_base_path, topdown=True):
             for file in filenames:
                 full_file_path = os.path.realpath(os.path.join(directory_path, file))
@@ -151,6 +152,7 @@ class Framework:
         if total_mal_files_count > 0:
             self.plugin.num_mal_p_files = total_mal_files_count
             for mal_file in mal_files:
+                mal_file: FileMetadata = mal_file
                 self.plugin.mal_files[mal_file.filepath] = mal_file
             self.plugin.is_mal = True
 
