@@ -153,7 +153,7 @@ class Analysis_WP_Plugin(BaseAnalysisClass):
             file_obj.file_info = {}
             return plugin_obj, file_obj.is_plugin
         
-        elif file_obj.filepath.endswith("style.css"):
+        elif "style.css" in file_obj.filename:
             self.populate_other_theme_metadata(file_obj, plugin_obj)
             return plugin_obj, True
 
