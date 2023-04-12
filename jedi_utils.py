@@ -63,8 +63,8 @@ def process_outputs(plugin: Plugin, analysis_start: float):
     op["tot_mal_files"] = plugin.num_mal_p_files
     op["mal_file_info"] = {}
     if plugin.is_mal:
-        for mal_file in plugin.mal_files:
-            mal_file: FileMetadata = mal_file
+        for _mal_file in plugin.mal_files:
+            mal_file: FileMetadata = plugin.mal_files[_mal_file]
             file_obj = {}
             file_obj["suspicious_tags"] = mal_file.suspicious_tags
             file_obj["extracted_results"] = mal_file.extracted_results

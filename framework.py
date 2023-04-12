@@ -13,10 +13,10 @@ from models.base_class import FileMetadata
 from models.base_analysis_class import BaseAnalysisClass
 from jedi_utils import *
 from analysis_rules.analysis_wp_plugin import Analysis_WP_Plugin
-
+from analysis_rules.analysis_mplugin import Analysis_MPlugin
 
 mal_file_analysis_rules: List[BaseAnalysisClass] = [
-    
+    Analysis_MPlugin(),
 ]
 
 # Rules that are run only if a file has been flagged as malicious
@@ -64,6 +64,7 @@ class Framework:
         else:
             base_path = base_path + "/"
         
+        self.default_name = base_path.strip('/').split('/')[-1]
         self.plugin = get_plugin(base_path)
         self.metadata_analysis: BaseAnalysisClass = Analysis_WP_Plugin()
 
@@ -72,7 +73,7 @@ class Framework:
         ma = magic.Magic(mime=True)
 
         num_files = 0
-        # TODO: Check everything after base_path, or just everything?
+        # TODO: Check everything under base_path, or just everything?
         for directory_path, subdirectories, filenames in os.walk(self.plugin.plugin_base_path, topdown=True):
             for file in filenames:
                 full_file_path = os.path.realpath(os.path.join(directory_path, file))
@@ -148,7 +149,6 @@ class Framework:
                 else:
                     file_obj.is_malicious = False
 
-        # print("Total number of mal files", tot_mal_files, c_obj.commit_id)
         if total_mal_files_count > 0:
             self.plugin.num_mal_p_files = total_mal_files_count
             for mal_file in mal_files:
@@ -159,13 +159,13 @@ class Framework:
         if self.plugin.is_mal:
             website_output = process_outputs(self.plugin, analysis_start)
 
-            # TODO: Filename
-            op_path = "results/" + self.plugin.plugin_name + ".json.gz"
+            op_filename = self.plugin.theme_name if self.plugin.is_theme else (self.plugin.plugin_name if self.plugin.plugin_name else self.default_name)
+            op_path = "results/" + op_filename + ".json"
             if not os.path.isdir('results'):  # mkdir results if not exists
                 os.makedirs('results')
 
-            with gzip.open(op_path, 'w') as f:
-                f.write(json.dumps(website_output, default=str).encode('utf-8'))
+            with open(op_path, 'w') as f:
+                f.write(json.dumps(website_output, default=str))
 
         worker_pool.close()
         worker_pool.join()
