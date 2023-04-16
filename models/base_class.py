@@ -25,9 +25,11 @@ class FileMetadata():
 
 
 class Plugin():
-    def __init__(self, plugin_name = None, plugin_path = None):
+    def __init__(self, plugin_name = None, plugin_path = None, platform = "Unknown", source = "Unknown"):
         self.plugin_name = plugin_name
         self.plugin_base_path = os.path.abspath(plugin_path)
+        self.download_platform = platform
+        self.download_source = source
         self.files = {}
         self.version = None
         self.author = None
