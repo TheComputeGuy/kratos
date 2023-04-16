@@ -3,7 +3,6 @@ import time
 import os
 import copy
 import json
-import gzip
 import subprocess
 import argparse
 import magic
@@ -14,9 +13,21 @@ from models.base_analysis_class import BaseAnalysisClass
 from jedi_utils import *
 from analysis_rules.analysis_wp_plugin import Analysis_WP_Plugin
 from analysis_rules.analysis_mplugin import Analysis_MPlugin
+from analysis_rules.analysis_api_abuse import Analysis_API_Abuse
+from analysis_rules.analysis_blackhat_seo import Analysis_Blackhat_SEO
+from analysis_rules.analysis_downloader import Analysis_Downloader
+from analysis_rules.analysis_function_construction import Analysis_Function_Construction
+from analysis_rules.analysis_gated_plugin import Analysis_Gated_Plugin
+from analysis_rules.analysis_spam import Analysis_Spam
 
 mal_file_analysis_rules: List[BaseAnalysisClass] = [
+    Analysis_API_Abuse(),
+    Analysis_Blackhat_SEO(),
+    Analysis_Downloader(),
+    Analysis_Function_Construction(),
+    Analysis_Gated_Plugin,
     Analysis_MPlugin(),
+    Analysis_Spam(),
 ]
 
 # Rules that are run only if a file has been flagged as malicious
@@ -67,6 +78,7 @@ class Framework:
         self.default_name = base_path.strip('/').split('/')[-1]
         self.plugin = get_plugin(base_path)
         self.metadata_analysis: BaseAnalysisClass = Analysis_WP_Plugin()
+        self.original_path = base_path
 
     def get_file_list(self):
         file_list = []
@@ -123,6 +135,7 @@ class Framework:
 
         if not found_plugin_metadata:
             # TODO: What to do if no metadata found? Put some metadata here
+            print("NO PLUGIN METADATA FOUND, SKIPPING")
             exit(400)
 
         mal_detect_output = worker_pool.map(do_malicious_file_detection, files_to_analyze)
