@@ -68,13 +68,20 @@ class Analysis_Function_Construction(BaseAnalysisClass):
                                                 timeout=5*60              # 5 min timeout
                                               )
 
-      except subprocess.CalledProcessError:                        # Something went wrong
+      except subprocess.CalledProcessError as e:                        # Something went wrong
+        print("ERROR (FC Parser):", e, "while parsing file", file_object.filepath)
+        print()
         return
       except subprocess.TimeoutExpired:
+        print("Terminated FC Parser for file", file_object.filepath, "due to timeout")
+        print()
         fc_parser.terminate()
         return
 
       if fc_err:
+        print("Error in FC parser for file", file_object.filepath)
+        print(fc_err.decode())
+        print()
         return
       elif fc_out:
         fc_out = json.loads(fc_out.decode('utf-8'))

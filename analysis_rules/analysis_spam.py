@@ -31,13 +31,15 @@ class Analysis_Spam(BaseAnalysisClass):
 
         spam_out, spam_err = spam_parser.communicate(file_object.ast)    # send AST over stdin
 
-      except subprocess.CalledProcessError:                        # Something went wrong
-        pass
+      except subprocess.CalledProcessError as e:                        # Something went wrong
+        print("ERROR (Spam Parser):", e, "while parsing file", file_object.filepath)
+        print()
+        return
 
       if spam_err:
-        #print()
-        #print(spam_err.decode())
-        #print()
+        print("Error in Spam parser for file", file_object.filepath)
+        print(spam_err.decode())
+        print()
         return
       elif spam_out:
         spam_out = json.loads(spam_out.decode('utf-8'))              # Decode JSON result

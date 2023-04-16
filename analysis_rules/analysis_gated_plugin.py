@@ -31,11 +31,15 @@ class Analysis_Gated_Plugin(BaseAnalysisClass):
         
         gp_out, gp_err = gp_parser.communicate(file_object.ast)     # send AST over stdin pipe
 
-      except subprocess.CalledProcessError:                          # Something went wrong
+      except subprocess.CalledProcessError as e:                          # Something went wrong
+        print("ERROR (Gated Plugin Parser):", e, "while parsing file", file_object.filepath)
+        print()
         return
 
       if gp_err:
-        #print(gp_err)
+        print("Error in GP parser for file", file_object.filepath)
+        print(gp_err)
+        print()
         return
       
       elif gp_out:

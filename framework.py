@@ -25,7 +25,7 @@ mal_file_analysis_rules: List[BaseAnalysisClass] = [
     Analysis_Blackhat_SEO(),
     Analysis_Downloader(),
     Analysis_Function_Construction(),
-    Analysis_Gated_Plugin,
+    Analysis_Gated_Plugin(),
     Analysis_MPlugin(),
     Analysis_Spam(),
 ]
@@ -60,7 +60,7 @@ def do_malicious_file_detection(file_obj: FileMetadata):
         print("ENCOUNTERED EXCEPTION {} FOR {}".format(e, file_obj.filepath), file=sys.stderr)
 
     for reanalysis in mal_file_analysis_rules:
-        reanalysis.reprocessFile(f_obj = file_obj, r_data = read_data)
+        reanalysis.reprocessFile(file_object = file_obj, r_data = read_data)
 
     file_obj.clearMemory()
 

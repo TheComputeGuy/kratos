@@ -16,6 +16,8 @@ class Analysis_Downloader(BaseAnalysisClass):
                         'php', '-f',
                         parser_path
                     ]
+    self.analyzed_links = {}
+
 
   def reprocessFile(self, file_object, r_data=None):
     str_lst = ["$basicAuth", "https://%s", "https://$domain", "http://localhost", "this->", "str_replace", "'", '"', "$"]
@@ -37,14 +39,15 @@ class Analysis_Downloader(BaseAnalysisClass):
                                     
         dl_out, dl_err = dl_parser.communicate(file_object.ast)     # send AST over stdin pipe
 
-      except subprocess.CalledProcessError:                        # Something went wrong
-        #print("Exception")
+      except subprocess.CalledProcessError as e:                        # Something went wrong
+        print("ERROR (DL Parser):", e, "while parsing file", file_object.filepath)
+        print()
         return
 
       if dl_err:
-        #print("DL_ERR")
-        #print(dl_err.decode())
-        #print()
+        print("Error in DL parser for file", file_object.filepath)
+        print(dl_err.decode())
+        print()
         return
       elif dl_out:
         dl_out = json.loads(dl_out.decode('utf-8'))

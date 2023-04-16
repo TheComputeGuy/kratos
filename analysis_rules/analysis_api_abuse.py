@@ -32,13 +32,15 @@ class Analysis_API_Abuse(BaseAnalysisClass):
                                     
         api_out, api_err = api_parser.communicate(file_object.ast)  # send AST over stdin pipe
 
-      except subprocess.CalledProcessError:                        # Something went wrong
+      except subprocess.CalledProcessError as e:                        # Something went wrong
+        print("ERROR (AA Parser):", e, "while parsing file", file_object.filepath)
+        print()
         return
 
       if api_err:
-        # print("ERR")
-        # print(api_err.decode())
-        # print()
+        print("Error in API Abuse parser for file", file_object.filepath)
+        print(api_err.decode())
+        print()
         return
       elif api_out:
         api_out = json.loads(api_out.decode('utf-8'))

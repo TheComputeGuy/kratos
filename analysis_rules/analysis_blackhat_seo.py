@@ -16,6 +16,7 @@ class Analysis_Blackhat_SEO(BaseAnalysisClass):
                         'php', '-f',
                         parser_path
                     ]
+    self.analyzed_links = {}
 
   def reprocessFile(self, file_object, r_data=None):
     if 'php' not in file_object.mime_type:                               # only process if PHP
@@ -30,9 +31,14 @@ class Analysis_Blackhat_SEO(BaseAnalysisClass):
         bs_out, bs_err = bs_parser.communicate(file_object.ast)
 
       except subprocess.CalledProcessError as e:                   # Something went wrong
-        print("ERROR:", e, "while parsing file", file_object.filepath)
+        print("ERROR (BS Parser):", e, "while parsing file", file_object.filepath)
+        print()
+        return
 
       if bs_err:
+        print("Error in BS parser for file", file_object.filepath)
+        print(bs_err.decode())
+        print()
         return
       elif bs_out:
         bs_out = bs_out.decode('utf-8')

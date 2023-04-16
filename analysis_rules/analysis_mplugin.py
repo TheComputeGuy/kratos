@@ -13,7 +13,7 @@ class Analysis_MPlugin(BaseAnalysisClass):
       self.pattern3 = re.compile(r"file_get_contents_mplugin|getVisIpAddr_mplugin|hide_plugin_mplugin") # custom functions
       self.pattern4 = re.compile(r"http://www\.somndo\.\w+") # Suspicious domains
 
-    def reprocessFile(self, f_obj: FileMetadata, r_data: str):
+    def reprocessFile(self, file_object, r_data):
       suspicious_file = False
       p0 = re.findall(self.pattern0, r_data)
       p1 = re.findall(self.pattern1, r_data)
@@ -23,22 +23,22 @@ class Analysis_MPlugin(BaseAnalysisClass):
 
       if (p0 and p1):
         suspicious_file = True
-        f_obj.suspicious_tags.append("MPLUGIN_HEADER")
+        file_object.suspicious_tags.append("MPLUGIN_HEADER")
       if (p2 or p3):
         suspicious_file = True
-        f_obj.suspicious_tags.append("MPLUGIN_FUNCTIONS")
-        f_obj.extracted_results["MPLUGIN_FUNCTIONS"] = [p2, p3]
+        file_object.suspicious_tags.append("MPLUGIN_FUNCTIONS")
+        file_object.extracted_results["MPLUGIN_FUNCTIONS"] = [p2, p3]
       if (p4):
         suspicious_file = True
-        f_obj.suspicious_tags.append("MPLUGIN_DOMAINS")
-        f_obj.extracted_results["MPLUGIN_DOMAINS"] = [p4]
+        file_object.suspicious_tags.append("MPLUGIN_DOMAINS")
+        file_object.extracted_results["MPLUGIN_DOMAINS"] = [p4]
       if(suspicious_file == False):
-        if "MPLUGIN_HEADER" in f_obj.suspicious_tags:
-          f_obj.suspicious_tags.remove("MPLUGIN_HEADER")
-        if "MPLUGIN_FUNCTIONS" in f_obj.suspicious_tags:
-          f_obj.suspicious_tags.remove("MPLUGIN_FUNCTIONS")
-        if "MPLUGIN_DOMAINS" in f_obj.suspicious_tags:
-          f_obj.suspicious_tags.remove("MPLUGIN_DOMAINS")
+        if "MPLUGIN_HEADER" in file_object.suspicious_tags:
+          file_object.suspicious_tags.remove("MPLUGIN_HEADER")
+        if "MPLUGIN_FUNCTIONS" in file_object.suspicious_tags:
+          file_object.suspicious_tags.remove("MPLUGIN_FUNCTIONS")
+        if "MPLUGIN_DOMAINS" in file_object.suspicious_tags:
+          file_object.suspicious_tags.remove("MPLUGIN_DOMAINS")
 
 
 if __name__=='__main__':  # for debug only
