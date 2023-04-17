@@ -103,7 +103,7 @@ def get_plugin(base_path: str) -> Plugin:
                 plugin_base_path = os.path.realpath(directory_path)
                 break
 
-    download_source = os.path.realpath(os.path.dirname(os.path.dirname(base_path))).split['/'][-1]
-    download_platform = os.path.realpath(os.path.dirname(os.path.dirname(os.path.dirname(base_path)))).split['/'][-1]
+    download_source = os.path.realpath(os.path.dirname(os.path.dirname(base_path))).split('/')[-1]
+    download_platform = os.path.realpath(os.path.dirname(os.path.dirname(os.path.dirname(base_path)))).split('/')[-1]
 
     return Plugin(plugin_path=plugin_base_path, platform=download_platform, source=download_source)

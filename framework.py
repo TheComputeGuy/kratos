@@ -3,7 +3,6 @@ import time
 import os
 import copy
 import json
-import datetime
 import subprocess
 import argparse
 import magic
@@ -66,25 +65,6 @@ def do_malicious_file_detection(file_obj: FileMetadata):
     file_obj.clearMemory()
 
     return file_obj
-
-
-class EST5EDT(datetime.tzinfo):
-
-    def utcoffset(self, dt):
-        return datetime.timedelta(hours=-5) + self.dst(dt)
-
-    def dst(self, dt):
-        d = datetime.datetime(dt.year, 3, 8)        #2nd Sunday in March (2020)
-        self.dston = d + datetime.timedelta(days=6-d.weekday())
-        d = datetime.datetime(dt.year, 11, 1)       #1st Sunday in Nov (2020)
-        self.dstoff = d + datetime.timedelta(days=6-d.weekday())
-        if self.dston <= dt.replace(tzinfo=None) < self.dstoff:
-            return datetime.timedelta(hours=1)
-        else:
-            return datetime.timedelta(0)
-
-    def tzname(self, dt):
-        return 'EST5EDT'
 
 
 class Framework:
@@ -193,7 +173,7 @@ class Framework:
             website_output = process_outputs(self.plugin, analysis_start)
 
             op_filename = self.plugin.theme_name if self.plugin.is_theme else (self.plugin.plugin_name if self.plugin.plugin_name else self.default_name)
-            op_filename = self.plugin.download_platform + "_" + self.plugin.download_source + "_" + op_filename + datetime.datetime.now(tz=EST5EDT()).isoformat()
+            op_filename = self.plugin.download_platform + "_" + self.plugin.download_source + "_" + op_filename + "_" + str(int(time.time()))
             op_path = "results/" + op_filename + ".json"
             if not os.path.isdir('results'):  # mkdir results if not exists
                 os.makedirs('results')
