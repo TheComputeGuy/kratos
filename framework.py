@@ -3,7 +3,6 @@ import time
 import os
 import copy
 import json
-import gzip
 import subprocess
 import argparse
 import magic
@@ -14,9 +13,21 @@ from models.base_analysis_class import BaseAnalysisClass
 from jedi_utils import *
 from analysis_rules.analysis_wp_plugin import Analysis_WP_Plugin
 from analysis_rules.analysis_mplugin import Analysis_MPlugin
+from analysis_rules.analysis_api_abuse import Analysis_API_Abuse
+from analysis_rules.analysis_blackhat_seo import Analysis_Blackhat_SEO
+from analysis_rules.analysis_downloader import Analysis_Downloader
+from analysis_rules.analysis_function_construction import Analysis_Function_Construction
+from analysis_rules.analysis_gated_plugin import Analysis_Gated_Plugin
+from analysis_rules.analysis_spam import Analysis_Spam
 
 mal_file_analysis_rules: List[BaseAnalysisClass] = [
+    Analysis_API_Abuse(),
+    Analysis_Blackhat_SEO(),
+    Analysis_Downloader(),
+    Analysis_Function_Construction(),
+    Analysis_Gated_Plugin(),
     Analysis_MPlugin(),
+    Analysis_Spam(),
 ]
 
 # Rules that are run only if a file has been flagged as malicious
@@ -49,7 +60,7 @@ def do_malicious_file_detection(file_obj: FileMetadata):
         print("ENCOUNTERED EXCEPTION {} FOR {}".format(e, file_obj.filepath), file=sys.stderr)
 
     for reanalysis in mal_file_analysis_rules:
-        reanalysis.reprocessFile(f_obj = file_obj, r_data = read_data)
+        reanalysis.reprocessFile(file_object = file_obj, r_data = read_data)
 
     file_obj.clearMemory()
 
@@ -67,6 +78,7 @@ class Framework:
         self.default_name = base_path.strip('/').split('/')[-1]
         self.plugin = get_plugin(base_path)
         self.metadata_analysis: BaseAnalysisClass = Analysis_WP_Plugin()
+        self.original_path = base_path
 
     def get_file_list(self):
         file_list = []
@@ -123,6 +135,7 @@ class Framework:
 
         if not found_plugin_metadata:
             # TODO: What to do if no metadata found? Put some metadata here
+            print("NO PLUGIN METADATA FOUND, SKIPPING")
             exit(400)
 
         mal_detect_output = worker_pool.map(do_malicious_file_detection, files_to_analyze)
@@ -160,9 +173,16 @@ class Framework:
             website_output = process_outputs(self.plugin, analysis_start)
 
             op_filename = self.plugin.theme_name if self.plugin.is_theme else (self.plugin.plugin_name if self.plugin.plugin_name else self.default_name)
+            op_filename = self.plugin.download_platform + "_" + self.plugin.download_source + "_" + op_filename + "_" + str(int(time.time()))
             op_path = "results/" + op_filename + ".json"
             if not os.path.isdir('results'):  # mkdir results if not exists
                 os.makedirs('results')
+
+            if 'BRIDGE_DIR' in os.environ:
+                bridge_dir = os.environ['BRIDGE_DIR']
+                op_path = bridge_dir + op_path
+                if not os.path.isdir(bridge_dir + 'results'):  # mkdir results if not exists
+                    os.makedirs(bridge_dir + 'results')
 
             with open(op_path, 'w') as f:
                 f.write(json.dumps(website_output, default=str))
@@ -173,12 +193,16 @@ class Framework:
 
 if __name__ == "__main__":
     start = time.time()
-    
-    # TODO: Parsing plugin path when using docker
-    parser = argparse.ArgumentParser()
-    parser.add_argument("base_path", help="The path of plugin to be analysed")
-    args = parser.parse_args()
-    base_path = args.base_path
+
+    base_path = ''
+
+    if 'BASE_PATH' in os.environ:
+        base_path = os.environ['BASE_PATH']
+    else:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("base_path", help="The path of plugin to be analysed")
+        args = parser.parse_args()
+        base_path = args.base_path
 
     framework = Framework(base_path=base_path)
     framework.run()

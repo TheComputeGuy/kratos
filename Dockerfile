@@ -6,6 +6,8 @@ COPY . .
 
 ENV DEBIAN_FRONTEND noninteractive
 
+ENV BRIDGE_DIR /usr/src/bridge/
+
 RUN apt-get update && \
     apt-get install -y sudo libfuzzy-dev libmagic-dev php7.4 php7.4-dev php7.4-xml php7.4-xmlwriter php7.4-mbstring php7.4-curl && \
     pip install --no-cache-dir -r requirements.txt && \

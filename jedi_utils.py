@@ -47,11 +47,12 @@ def get_extension(file_name):
 
 def process_outputs(plugin: Plugin, analysis_start: float):
     op = {}
-    # TODO: Add more context - like download source, etc? Maybe from base path
     # TODO: Add date of upload? If available
     # op["date"] = ??
     op["plugin_name"] = plugin.plugin_name
     op["base_path"] = plugin.plugin_base_path
+    op["download_platform"] = plugin.download_platform
+    op["download_source"] = plugin.download_source
     op["plugin_version"] = plugin.version
     op["plugin_author"] = plugin.author
     op["plugin_author_uri"] = plugin.author_uri
@@ -101,5 +102,8 @@ def get_plugin(base_path: str) -> Plugin:
             if "wpml-config" in file:
                 plugin_base_path = os.path.realpath(directory_path)
                 break
-    
-    return Plugin(plugin_path=plugin_base_path)
+
+    download_source = os.path.realpath(os.path.dirname(os.path.dirname(base_path))).split('/')[-1]
+    download_platform = os.path.realpath(os.path.dirname(os.path.dirname(os.path.dirname(base_path)))).split('/')[-1]
+
+    return Plugin(plugin_path=plugin_base_path, platform=download_platform, source=download_source)
